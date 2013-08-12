@@ -1,7 +1,10 @@
 package com.wtf.gui;
 
 import java.util.ResourceBundle;
+
 import org.apache.log4j.Logger;
+
+import com.wtf.services.Agent;
 
 public class GreenHouse {
 	
@@ -15,11 +18,13 @@ public class GreenHouse {
 	private String name;
 	private String address;
 	private String port;
+	private Agent agent;
 	
 	public GreenHouse() {
 		name = props.getString("name");
 		address = props.getString("IP");
 		port = props.getString("port");
+		agent = new Agent(name, address, port);
 	}
 	
 	
@@ -29,6 +34,14 @@ public class GreenHouse {
 		log.info("Ip: " + gh.getAddress());
 		log.info("port: " + gh.getPort());
 		
+	}
+	
+	public void askTemperature(String name) {
+		agent.askTemperature(name);
+	}
+	
+	public void askAllTemperature() {
+		agent.askAllTemperature();
 	}
 
 
