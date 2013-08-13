@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -51,7 +50,7 @@ public class Agent {
 			public boolean removeEldestEntry(Map.Entry<Calendar, Float> eldest) {
 				return size() > STACK_SIZE;
 			}
-		};
+		};		
 	}
 	
 	private float calculateTemperature() {
@@ -122,6 +121,13 @@ public class Agent {
 		log.info("Preguntando temperatura de todos los invernaderos ");
 	}
 	
+	public void shutDown() {
+		timer.cancel();
+		timer.purge();
+		timerTask.cancel();
+		unregister();
+	}
+	
 	public void register() {
 		//Debe ir a registrarse con el dispatcher y establecer su frecuencia
 		
@@ -139,55 +145,7 @@ public class Agent {
 		//log.info("Temp: "+f+" C");
 		a.measureTemperature();	
 		
-		String input = "";
-		Scanner scanner = new Scanner(System.in);
-		byte cont = 0;
-		//System.out.println("Type your command :");
-		do {
-			String[] params = input.split(" ");
-			if (params.length > 0) {
-				if (params[0].equalsIgnoreCase("getTemp")) {
-					if (params.length == 1) {
-						a.printRegistry();	
-					} else {
-						for (byte b=1; b<params.length; b++) {
-							String s = params[b];
-							if (s.equalsIgnoreCase("all")) {
-								a.askAllTemperature();
-							} else {
-								a.askTemperature(s);
-							}
-						}
-					}
-				} else if (params[0].equalsIgnoreCase("newFreq")) {
-					if (params.length != 2) {
-						log.error("ERROR Bad command or missing arguments !");
-					} else {
-						String freq = params[1];
-						try {
-							int f = Integer.parseInt(freq);
-							a.updateFrecuency(f);
-						} catch (NumberFormatException nfe) {
-							log.error("ERROR argument is not number type !");
-						}
-					}
-					
-				} else {
-					if (cont++ > 0) {
-						log.error("ERROR Bad command !");
-					}
-				}
-			}
-			
-			log.info("Type your command :");	
-			input = scanner.nextLine();
-		} while (!input.equals("exit"));
-		log.warn("Shutting down greenhouse "+ a.name);
-		log.warn("Bye !");
-		scanner.close();
-		a.timer.cancel();
-		a.timer.purge();
-		a.timerTask.cancel();
+
 		
 		/*
 		try {
