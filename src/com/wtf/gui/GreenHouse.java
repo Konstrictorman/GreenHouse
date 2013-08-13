@@ -1,5 +1,6 @@
 package com.wtf.gui;
 
+import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
@@ -21,7 +22,7 @@ public class GreenHouse {
 	private String port;
 	private Agent agent;
 	
-	public GreenHouse() {
+	public GreenHouse() throws IOException {
 		name = props.getString("name");
 		address = props.getString("IP");
 		port = props.getString("port");
@@ -34,7 +35,7 @@ public class GreenHouse {
 	}
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		GreenHouse gh = new GreenHouse();
 		log.info("name: " + gh.getName());
 		log.info("Ip: " + gh.getAddress());
@@ -89,11 +90,11 @@ public class GreenHouse {
 		gh.agent.shutDown();
 	}
 	
-	public void askTemperature(String name) {
+	public void askTemperature(String name) throws IOException {
 		agent.askTemperature(name);
 	}
 	
-	public void askAllTemperature() {
+	public void askAllTemperature() throws IOException {
 		agent.askAllTemperature();
 	}
 

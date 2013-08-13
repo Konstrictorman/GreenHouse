@@ -1,7 +1,9 @@
 package com.wtf.services;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -9,11 +11,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import com.wtf.commons.Configuration;
+import com.wtf.commons.Entry;
+import com.wtf.commons.ForwarderFactory;
+import com.wtf.commons.RegistrySingleton;
 import com.wtf.comunications.Forwarder;
-import com.wtf.comunications.Receiver;
+import com.wtf.comunications.messages.Message;
+import com.wtf.comunications.messages.ReqDispatcherAskTempMessage;
+import com.wtf.comunications.messages.ReqDispatcherRegisterMessage;
+import com.wtf.comunications.messages.ReqDispatcherUnRegisterMessage;
+import com.wtf.comunications.messages.ReqDispatcherUpFrecuencyMessage;
+import com.wtf.comunications.messages.RespDispatcherAskTempMessage;
+import com.wtf.listener.AppListener;
 
 public class Agent {
 	
@@ -29,8 +43,7 @@ public class Agent {
 	private String name;
 	private String address;
 	private String port;
-	private Forwarder forwarder;
-	private Receiver receiver;
+	private Forwarder forwarder;	
 	private Map<Calendar, Float> tempRegistry;
 	private TimerTask timerTask;
 	private Timer timer;
@@ -38,11 +51,13 @@ public class Agent {
 	
 	public Agent(String name, String address, String port) {
 		super();
+		this.startUp();
 		this.name = name;
 		this.address = address;
 		this.port = port;
-		forwarder = new Forwarder();
-		receiver = new Receiver();
+		forwarder = ForwarderFactory.get();		
+		ExecutorService service = Executors.newFixedThreadPool(10);
+		service.submit(new AppListener(this));
 		tempRegistry = new LinkedHashMap<Calendar, Float>() {
 			private static final long serialVersionUID = -5906100478003476286L;
 			private static final int STACK_SIZE=5;
@@ -51,6 +66,14 @@ public class Agent {
 				return size() > STACK_SIZE;
 			}
 		};		
+	}
+	
+	private void startUp(){
+		Entry theEntry = new Entry(Configuration.IP , Integer.valueOf(Configuration.PORT), Configuration.PROTOCOL);
+		RegistrySingleton.getInstance().put(Configuration.lOCALHOST, theEntry);
+		Entry entry = new Entry(Configuration.IP_DISPATCHER , 
+				Integer.valueOf(Configuration.PORT_DISPATCHER), Configuration.PROTOCOL);
+		RegistrySingleton.getInstance().put(Configuration.DISPATCHER, entry);
 	}
 	
 	private float calculateTemperature() {
@@ -83,15 +106,24 @@ public class Agent {
 		}		
 	}
 	
-	public void updateFrecuency(int newFrecuency) {
+	public void updateFrecuency(int newFrecuency) throws IOException {
 		log.info("Cambiando frecuencia de "+getFrecuency()+" a "+newFrecuency);
 		setFrecuency(newFrecuency);
+		//Envia mensaje de cambio de frecuencia a todas las estaciones inclusive al Dispatcher 
+		for (java.util.Map.Entry<String, Entry> station :  RegistrySingleton.getInstance().getAll().entrySet()) {
+			if (!station.getKey().equals(Configuration.lOCALHOST)) {		
+				ReqDispatcherUpFrecuencyMessage msg = new ReqDispatcherUpFrecuencyMessage(Configuration.lOCALHOST,newFrecuency) ;		
+				forwarder.sendMessage(station.getKey(), msg);
+			}
+		}		
+		
 		timerTask.cancel();
 		//timer.schedule(timerTask, 0, getFrecuency()*1000);
 		timer.cancel();
 		timer.purge();
 		timer = null;
 		measureTemperature();
+		
 	}
 	
 	public synchronized void printRegistry() {
@@ -105,36 +137,55 @@ public class Agent {
 		}
 	}
 	
-	public void askTemperature(String name) {
+	@SuppressWarnings("rawtypes")
+	public void replyTemperature() throws IOException{
+		//TODO: como se v a ha enviar la temperatura
+		RespDispatcherAskTempMessage msg = new RespDispatcherAskTempMessage(Configuration.lOCALHOST, new ArrayList());
+		forwarder.sendMessage(name , msg);		
+	}
+	
+	public void askTemperature(String name) throws IOException {
 		/*
 		 * Preguntar al dispatcher dónde se ubica el invernadero de nombre name
 		 * y establecer conexión con este y enviar petición
 		 */
 		log.info("Preguntando temperatura del invernadero "+name);
+		ReqDispatcherAskTempMessage msg = new ReqDispatcherAskTempMessage(Configuration.lOCALHOST, "");
+		forwarder.sendMessage(name , msg);		
 	}
 	
-	public void askAllTemperature() {
+	public void askAllTemperature() throws IOException {
 		/*
 		 * Preguntar al dispatcher dónde se ubican los demás invernaderos
 		 * y establecer conexión con estos y enviar petición a c/u
 		 */	
 		log.info("Preguntando temperatura de todos los invernaderos ");
+		for (java.util.Map.Entry<String, Entry> station :  RegistrySingleton.getInstance().getAll().entrySet()) {
+			if (!station.getKey().equals(Configuration.lOCALHOST)) {		
+				ReqDispatcherAskTempMessage msg = new ReqDispatcherAskTempMessage(Configuration.lOCALHOST, "");
+				forwarder.sendMessage(name , msg);
+			}
+		}
 	}
 	
-	public void shutDown() {
+	public void shutDown() throws IOException {
 		timer.cancel();
 		timer.purge();
 		timerTask.cancel();
 		unregister();
 	}
 	
-	public void register() {
+	public void register() throws IOException  {		
 		//Debe ir a registrarse con el dispatcher y establecer su frecuencia
-		
+		ReqDispatcherRegisterMessage msg = new ReqDispatcherRegisterMessage(Configuration.lOCALHOST, "") ; 
+		msg.setIpAddress(Configuration.IP);
+		msg.setPort(Integer.valueOf(Configuration.PORT));		
+		forwarder.sendMessage(Configuration.DISPATCHER, msg);
 	}
-	
-	public void unregister() {
-		
+
+	public void unregister() throws IOException {
+		Message msg = new ReqDispatcherUnRegisterMessage(Configuration.lOCALHOST, "") ;				
+		forwarder.sendMessage(Configuration.DISPATCHER, msg);
 	}
 	
 	
@@ -213,14 +264,6 @@ public class Agent {
 
 	public void setForwarder(Forwarder forwarder) {
 		this.forwarder = forwarder;
-	}
-
-	public Receiver getReceiver() {
-		return receiver;
-	}
-
-	public void setReceiver(Receiver receiver) {
-		this.receiver = receiver;
 	}
 
 	public Map<Calendar, Float> getTempRegistry() {
