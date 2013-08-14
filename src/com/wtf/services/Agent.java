@@ -21,6 +21,7 @@ import com.wtf.commons.Configuration;
 import com.wtf.commons.Entry;
 import com.wtf.commons.ForwarderFactory;
 import com.wtf.commons.RegistrySingleton;
+import com.wtf.commons.StackMap;
 import com.wtf.comunications.Forwarder;
 import com.wtf.comunications.messages.Message;
 import com.wtf.comunications.messages.ReqDispatcherAskTempMessage;
@@ -60,14 +61,7 @@ public class Agent extends Observable {
 		service.submit(new AppListener(this));
 		tempAll = new  Hashtable<String, Map<Calendar, Float>>();
 		
-		tempRegistry = new LinkedHashMap<Calendar, Float>() {
-			private static final long serialVersionUID = -5906100478003476286L;
-			private static final int STACK_SIZE=5;
-			
-			public boolean removeEldestEntry(Map.Entry<Calendar, Float> eldest) {
-				return size() > STACK_SIZE;
-			}
-		};		
+		tempRegistry = new StackMap();
 	}
 	
 	private void startUp(){
