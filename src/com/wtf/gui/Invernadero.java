@@ -282,7 +282,6 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
         		for(java.util.Map.Entry<Calendar, Float> item: local.entrySet()){
         		    String[] datos = {seleccionado, agent.formatter.format(item.getKey().getTime()),item.getValue().toString() }; // Cantidad de columnas de la tabla
                     modelo.addRow(datos);
-                
         		}
         	}else{
             try {
