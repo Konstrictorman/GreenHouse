@@ -312,5 +312,7 @@ public class Agent extends Observable {
         notifyObservers("REGISTER");
 	}
 	
-
+	public Hashtable<String, Map<Calendar, Float>> getTempAll() {
+		return tempAll;
+	}
 }

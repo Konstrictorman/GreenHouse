@@ -28,6 +28,7 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
 	 private Hashtable<String,Entry> hTable;
 	    
 	private Agent agent;
+	private String seleccionado;
     /**
      * Creates new form Invernadero
      */
@@ -377,6 +378,23 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
 			jLblFrecuencia.setText(String.valueOf(agent.getFrecuency()));
 		} else if ("TEMPERATURE".equals(arg)) {
 			   //llenar la tabla con la informacion de temperaturas aqui
+			String seleccionado =(String)comboInvernadero.getSelectedItem();
+			if(seleccionado==null || seleccionado.equals("seleccione")){
+				return;
+			}else if(seleccionado.equals("all")){
+				
+				//agent.getTempAll();	
+			}else{
+				Map<Calendar, Float> local= agent.getTempAll().get(seleccionado);
+        		DefaultTableModel modelo = (DefaultTableModel) tblResultadosTemperatura.getModel();
+        		
+        		for(java.util.Map.Entry<Calendar, Float> item: local.entrySet()){
+        		    String[] datos = {seleccionado, agent.formatter.format(item.getKey().getTime()),item.getValue().toString() }; // Cantidad de columnas de la tabla
+                    modelo.addRow(datos);
+        		}
+				
+			}
+			 
 			
 			
 			/***
