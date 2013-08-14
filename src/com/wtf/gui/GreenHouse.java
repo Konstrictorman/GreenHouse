@@ -15,7 +15,6 @@ public class GreenHouse {
     }	
 	
 	private static Logger log = Logger.getLogger(GreenHouse.class.getName());
-	public static ResourceBundle props = ResourceBundle.getBundle("greenHouse");
 	
 	private String name;
 	private String address;
@@ -23,9 +22,6 @@ public class GreenHouse {
 	private Agent agent;
 	
 	public GreenHouse() throws IOException {
-		name = props.getString("name");
-		address = props.getString("IP");
-		port = props.getString("port");
 		agent = new Agent();
 		agent.register();
 		

@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: com.wtf.gui.GreenHouse
+Class-Path: Communications.jar log4j-1.2.16.jar
+
