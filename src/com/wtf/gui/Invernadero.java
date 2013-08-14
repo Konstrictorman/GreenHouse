@@ -36,6 +36,7 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
     	initComponents();
         setSize(800,500);
         setLocation(300,300);
+        jLabelTitulo.setText(jLabelTitulo.getText()+ " "+Configuration.lOCALHOST);
         agent = new Agent();
         agent.addObserver(this);
         // add observer to the watched object
@@ -66,7 +67,6 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
        hTable = new Hashtable<String,Entry>() ;
        hTable =RegistrySingleton.getInstance().getAll();
        //Seteamos el titulo del invernadero
-       jLabelTitulo.setText(jLabelTitulo.getText()+ " "+Configuration.lOCALHOST);
        comboInvernadero.removeAllItems();
        
        comboInvernadero.addItem("seleccione");
@@ -382,8 +382,14 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
 			if(seleccionado==null || seleccionado.equals("seleccione")){
 				return;
 			}else if(seleccionado.equals("all")){
-				
-				//agent.getTempAll();	
+        		DefaultTableModel modelo = (DefaultTableModel) tblResultadosTemperatura.getModel();
+				for(String item: agent.getTempAll().keySet()){
+					Map<Calendar, Float> invernadero= agent.getTempAll().get(item);
+					for(java.util.Map.Entry<Calendar, Float> item2: invernadero.entrySet()){
+	        		    String[] datos = {seleccionado, agent.formatter.format(item2.getKey().getTime()),item2.getValue().toString() }; // Cantidad de columnas de la tabla
+	                    modelo.addRow(datos);
+	        		}
+        		}
 			}else{
 				Map<Calendar, Float> local= agent.getTempAll().get(seleccionado);
         		DefaultTableModel modelo = (DefaultTableModel) tblResultadosTemperatura.getModel();
@@ -394,22 +400,6 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
         		}
 				
 			}
-			 
-			
-			
-			/***
-			  DefaultTableModel modelo = (DefaultTableModel) tblResultadosTemperatura.getModel();
-            
-            for(String item: hTable.keySet()){
-                     //comboInvernadero.addItem(item);
-                     String[] datos = {item, String.valueOf(2), 2+"F"}; // Cantidad de columnas de la tabla
-                     modelo.addRow(datos);
-                     for (int i = 2; i < 6; i++) {
-                        String[] datos2 = {"", String.valueOf(i), i+"F"}; // Cantidad de columnas de la tabla
-                        modelo.addRow(datos2);
-                        }
-              }
-			 */
 			
 		}
 		
