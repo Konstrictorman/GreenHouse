@@ -26,7 +26,7 @@ public class GreenHouse {
 		name = props.getString("name");
 		address = props.getString("IP");
 		port = props.getString("port");
-		agent = new Agent(name, address, port);
+		agent = new Agent();
 		agent.register();
 		
 		//TODO: La frecuencia la da el dispatcher...

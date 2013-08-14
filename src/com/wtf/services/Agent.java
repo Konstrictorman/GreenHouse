@@ -49,13 +49,10 @@ public class Agent {
 	private Timer timer;
 	
 	
-	public Agent(String name, String address, String port) {
+	public Agent() {
 		super();
 		this.startUp();
-		this.name = name;
-		this.address = address;
-		this.port = port;
-		forwarder = ForwarderFactory.get();		
+		forwarder = ForwarderFactory.get(Integer.parseInt(Configuration.PORT), Configuration.PROTOCOL);		
 		ExecutorService service = Executors.newFixedThreadPool(10);
 		service.submit(new AppListener(this));
 		tempRegistry = new LinkedHashMap<Calendar, Float>() {
@@ -190,7 +187,7 @@ public class Agent {
 	
 	
 	public static void main(String[] args) {
-		Agent a = new Agent("Medellín","localhost","369");
+		Agent a = new Agent();
 		a.setFrecuency(10);
 		//float f = a.calculateTemperature();
 		//log.info("Temp: "+f+" C");

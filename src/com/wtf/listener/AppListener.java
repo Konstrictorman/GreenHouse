@@ -3,6 +3,7 @@ package com.wtf.listener;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import com.wtf.commons.Configuration;
 import com.wtf.commons.Entry;
 import com.wtf.commons.ReceiverFactory;
 import com.wtf.commons.RegistrySingleton;
@@ -22,7 +23,7 @@ public class AppListener implements Runnable  {
 
 	public AppListener(Agent agent){
 		this.agent = agent;
-		receiver = ReceiverFactory.get();
+		receiver = ReceiverFactory.get(Integer.parseInt(Configuration.PORT), Configuration.PROTOCOL);
 	}
 
 	@Override
