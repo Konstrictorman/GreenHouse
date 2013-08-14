@@ -172,7 +172,7 @@ public class Agent extends Observable {
 		for (java.util.Map.Entry<String, Entry> station :  RegistrySingleton.getInstance().getAll().entrySet()) {
 			if (!station.getKey().equals(Configuration.lOCALHOST)) {		
 				ReqDispatcherAskTempMessage msg = new ReqDispatcherAskTempMessage(Configuration.lOCALHOST, "");
-				forwarder.sendMessage(name , msg);
+				forwarder.sendMessage(station.getKey() , msg);
 			}
 		}
 	}
