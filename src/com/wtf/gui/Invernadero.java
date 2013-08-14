@@ -5,7 +5,9 @@
 package com.wtf.gui;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -265,26 +267,31 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
             return;
         }
         if (seleccionado.equals("all")){
-            DefaultTableModel modelo = (DefaultTableModel) tblResultadosTemperatura.getModel();
-            for(String item: hTable.keySet()){
-                     //comboInvernadero.addItem(item);
-                     String[] datos = {item, String.valueOf(2), 2+"F"}; // Cantidad de columnas de la tabla
-                     modelo.addRow(datos);
-                     for (int i = 2; i < 6; i++) {
-                        String[] datos2 = {"", String.valueOf(i), i+"F"}; // Cantidad de columnas de la tabla
-                        modelo.addRow(datos2);
-                        }
-              }
-            
+        	try {
+				agent.askAllTemperature();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }else{
-            Entry item=hTable.get(seleccionado);
-            //limpiarTabla(tblResultadosTemperatura);
-            
-            DefaultTableModel modelo = (DefaultTableModel) tblResultadosTemperatura.getModel();
-            for (int i = 1; i < 6; i++) {
-                String[] datos = {item.getDestinationId(), String.valueOf(i), i+"F"}; // Cantidad de columnas de la tabla
-                modelo.addRow(datos);
-            }
+        	
+        	if(seleccionado.equals(Configuration.lOCALHOST)){
+        		Map<Calendar, Float> local= agent.getTempRegistry();
+        		DefaultTableModel modelo = (DefaultTableModel) tblResultadosTemperatura.getModel();
+        		
+        		for(java.util.Map.Entry<Calendar, Float> item: local.entrySet()){
+        		    String[] datos = {seleccionado, agent.formatter.format(item.getKey().getTime()),item.getValue().toString() }; // Cantidad de columnas de la tabla
+                    modelo.addRow(datos);
+                
+        		}
+        	}else{
+            try {
+				agent.askTemperature(seleccionado);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
             
         }
         
@@ -371,6 +378,22 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
 			jLblFrecuencia.setText(String.valueOf(agent.getFrecuency()));
 		} else if ("TEMPERATURE".equals(arg)) {
 			   //llenar la tabla con la informacion de temperaturas aqui
+			
+			
+			/***
+			  DefaultTableModel modelo = (DefaultTableModel) tblResultadosTemperatura.getModel();
+            
+            for(String item: hTable.keySet()){
+                     //comboInvernadero.addItem(item);
+                     String[] datos = {item, String.valueOf(2), 2+"F"}; // Cantidad de columnas de la tabla
+                     modelo.addRow(datos);
+                     for (int i = 2; i < 6; i++) {
+                        String[] datos2 = {"", String.valueOf(i), i+"F"}; // Cantidad de columnas de la tabla
+                        modelo.addRow(datos2);
+                        }
+              }
+			 */
+			
 		}
 		
 	}
