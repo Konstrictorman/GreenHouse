@@ -22,7 +22,7 @@ public class GreenHouse {
 		agent.register();
 		
 		//TODO: La frecuencia la da el dispatcher...
-		//agent.setFrecuency(10);
+		agent.setFrecuency(10);
 		agent.measureTemperature();			
 	}
 	

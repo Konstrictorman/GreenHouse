@@ -151,6 +151,11 @@ public class Agent extends Observable {
 		@SuppressWarnings("unchecked")
 		Map<Calendar, Float> temp =  (Map<Calendar, Float>)((RespDispatcherAskTempMessage)message).getData();
 		tempAll.put(message.getSender(), temp);
+		
+		// mark as value changed
+        setChanged();
+        // trigger notification
+        notifyObservers("TEMPERATURE");
 	}
 	
 	

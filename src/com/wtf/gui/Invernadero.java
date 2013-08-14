@@ -365,6 +365,8 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
 			llenarComboDatos();
 		}else if("CHANGEFRECUENCY".equals(arg)){
 			jLblFrecuencia.setText(String.valueOf(agent.getFrecuency()));
+		} else if ("TEMPERATURE".equals(arg)) {
+			//llenar la tabla con la informacion de temperaturas
 		}
 		
 	}

@@ -40,8 +40,6 @@ public class AppListener  implements Runnable  {
 		}		
 	}
 
-
-	@SuppressWarnings("unchecked")
 	private void manejarMessage(Message message) throws IOException {
 		if (message instanceof RespDispatcherRegisterMessage) {
 			System.out.println("Recibiendo mensaje RespDispatcherRegisterMessage from "+ message.getSender());
