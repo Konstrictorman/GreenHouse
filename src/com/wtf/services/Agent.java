@@ -28,6 +28,7 @@ import com.wtf.comunications.messages.ReqDispatcherRegisterMessage;
 import com.wtf.comunications.messages.ReqDispatcherUnRegisterMessage;
 import com.wtf.comunications.messages.ReqDispatcherUpFrecuencyMessage;
 import com.wtf.comunications.messages.RespDispatcherAskTempMessage;
+import com.wtf.comunications.messages.RespDispatcherRegisterMessage;
 import com.wtf.listener.AppListener;
 
 public class Agent extends Observable {
@@ -245,7 +246,7 @@ public class Agent extends Observable {
 		// mark as value changed
         setChanged();
         // trigger notification
-        notifyObservers("FREQ");
+        notifyObservers("CHANGEFRECUENCY");
 	}
 
 	public String getName() {
@@ -288,9 +289,23 @@ public class Agent extends Observable {
 		this.tempRegistry = tempRegistry;
 	}
 
-
+	public void refreshNodes(Message message){
+		RegistrySingleton.getInstance().putAll(( Hashtable<String,Entry>)message.getData());
+		// mark as value changed
+        setChanged();
+        // trigger notification
+        notifyObservers("REFRESHNODES");
+	}
 	
-	
+	public void register(Message message){
+		RegistrySingleton.getInstance().putAll(( Hashtable<String,Entry>)message.getData());
+		RespDispatcherRegisterMessage response = ((RespDispatcherRegisterMessage) message);
+		setFrecuency(response.getFrecuency());
+		// mark as value changed
+        setChanged();
+        // trigger notification
+        notifyObservers("REGISTER");
+	}
 	
 
 }

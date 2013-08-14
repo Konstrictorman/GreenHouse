@@ -45,14 +45,12 @@ public class AppListener  implements Runnable  {
 	private void manejarMessage(Message message) throws IOException {
 		if (message instanceof RespDispatcherRegisterMessage) {
 			System.out.println("Recibiendo mensaje RespDispatcherRegisterMessage from "+ message.getSender());
-			RespDispatcherRegisterMessage response = ((RespDispatcherRegisterMessage) message);			
-			agent.setFrecuency(response.getFrecuency());
-			RegistrySingleton.getInstance().putAll(( Hashtable<String,Entry>)message.getData());
+			agent.register(message);
 			 // trigger notification
 	         //notifyObservers(agent.getFrecuency());
 		} else if (message instanceof RespDispatcherUnRegisterMessage) {		
 			System.out.println("Recibiendo mensaje RespDispatcherUnRegisterMessage from "+ message.getSender());
-			RegistrySingleton.getInstance().putAll(( Hashtable<String,Entry>)message.getData());
+			agent.refreshNodes(message);
 		}else if (message instanceof ReqDispatcherUpFrecuencyMessage) {
 			System.out.println("Recibiendo mensaje ReqDispatcherUpFrecuencyMessage from "+ message.getSender());
 			agent.setFrecuency(Integer.valueOf(message.getData().toString()));

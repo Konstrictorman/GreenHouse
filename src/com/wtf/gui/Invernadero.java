@@ -12,6 +12,7 @@ import java.util.Observer;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
+import com.wtf.commons.Configuration;
 import com.wtf.commons.Entry;
 import com.wtf.commons.RegistrySingleton;
 import com.wtf.services.Agent;
@@ -20,17 +21,16 @@ import com.wtf.services.Agent;
  *
  * @author EdwinL
  */
-public class Invernadero extends javax.swing.JFrame implements Observer  {
+public class Invernadero extends javax.swing.JFrame implements Observer {
 
-    private Hashtable<String,Entry> hTable;
-    
+	 private Hashtable<String,Entry> hTable;
+	    
 	private Agent agent;
     /**
      * Creates new form Invernadero
-     * @throws IOException 
      */
-    public Invernadero() throws IOException {
-        initComponents();
+    public Invernadero() throws IOException{
+    	initComponents();
         setSize(800,500);
         setLocation(300,300);
         agent = new Agent();
@@ -41,7 +41,6 @@ public class Invernadero extends javax.swing.JFrame implements Observer  {
 		//TODO: La frecuencia la da el dispatcher...
 		//agent.setFrecuency(10);
 		//agent.measureTemperature();	
-		llenarComboDatos();
     }
     /***
      * Limpiar tabla
@@ -62,15 +61,12 @@ public class Invernadero extends javax.swing.JFrame implements Observer  {
     //LLenar combos
     private void llenarComboDatos(){
        hTable = new Hashtable<String,Entry>() ;
+       hTable =RegistrySingleton.getInstance().getAll();
        //Seteamos el titulo del invernadero
-       jLabelTitulo.setText(jLabelTitulo.getText()+ "  "+"NombreInvernadero");
-       for (int i = 1; i < 10; i++) {
-            Entry item= new Entry("Ciudad"+i, 1000, "UDP");
-            hTable.put("Ciudad"+i, item);
-       }
-
+       jLabelTitulo.setText(jLabelTitulo.getText()+ " "+Configuration.lOCALHOST);
        comboInvernadero.addItem("all");
        for(String item: hTable.keySet()){
+    	   if(item.equals(Configuration.DISPATCHER)) continue;
            comboInvernadero.addItem(item);
        }
     }
@@ -92,6 +88,9 @@ public class Invernadero extends javax.swing.JFrame implements Observer  {
         btnRegrFrecuencia = new javax.swing.JButton();
         jLabelTitulo = new javax.swing.JLabel();
         comboInvernadero = new javax.swing.JComboBox();
+        jBtnLimpiarGrilla = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLblFrecuencia = new javax.swing.JLabel();
         jBtnCerrar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -145,6 +144,20 @@ public class Invernadero extends javax.swing.JFrame implements Observer  {
             }
         });
 
+        jBtnLimpiarGrilla.setText("Limpiar Grilla");
+        jBtnLimpiarGrilla.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnLimpiarGrillaActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel1.setText("Frecuencia");
+
+        jLblFrecuencia.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLblFrecuencia.setForeground(new java.awt.Color(204, 0, 0));
+        jLblFrecuencia.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
         javax.swing.GroupLayout panelPrincipalLayout = new javax.swing.GroupLayout(panelPrincipal);
         panelPrincipal.setLayout(panelPrincipalLayout);
         panelPrincipalLayout.setHorizontalGroup(
@@ -152,20 +165,32 @@ public class Invernadero extends javax.swing.JFrame implements Observer  {
             .addGroup(panelPrincipalLayout.createSequentialGroup()
                 .addGap(135, 135, 135)
                 .addComponent(jLabelTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
             .addGroup(panelPrincipalLayout.createSequentialGroup()
                 .addGap(46, 46, 46)
                 .addGroup(panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelPrincipalLayout.createSequentialGroup()
-                        .addComponent(etiquetahost, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(comboInvernadero, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(66, 66, 66)
-                        .addComponent(btnRegrFrecuencia)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtFrecuencia, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 625, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(22, 22, 22))
+                        .addComponent(jBtnLimpiarGrilla)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(panelPrincipalLayout.createSequentialGroup()
+                        .addGroup(panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 625, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPrincipalLayout.createSequentialGroup()
+                                .addComponent(etiquetahost, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(comboInvernadero, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(66, 66, 66)
+                                .addGroup(panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panelPrincipalLayout.createSequentialGroup()
+                                        .addComponent(btnRegrFrecuencia)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(txtFrecuencia, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(panelPrincipalLayout.createSequentialGroup()
+                                        .addGap(4, 4, 4)
+                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLblFrecuencia, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGap(22, 22, 22))))
         );
         panelPrincipalLayout.setVerticalGroup(
             panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -178,13 +203,20 @@ public class Invernadero extends javax.swing.JFrame implements Observer  {
                     .addComponent(comboInvernadero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRegrFrecuencia)
                     .addComponent(txtFrecuencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(32, 32, 32)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelPrincipalLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLblFrecuencia, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jBtnLimpiarGrilla, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         getContentPane().add(panelPrincipal);
-        panelPrincipal.setBounds(30, 20, 710, 310);
+        panelPrincipal.setBounds(30, 20, 710, 350);
 
         jBtnCerrar.setText("Cerrar");
         jBtnCerrar.addActionListener(new java.awt.event.ActionListener() {
@@ -193,7 +225,7 @@ public class Invernadero extends javax.swing.JFrame implements Observer  {
             }
         });
         getContentPane().add(jBtnCerrar);
-        jBtnCerrar.setBounds(600, 330, 140, 23);
+        jBtnCerrar.setBounds(600, 370, 140, 23);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -204,6 +236,16 @@ public class Invernadero extends javax.swing.JFrame implements Observer  {
            JOptionPane.showMessageDialog(null,"Por favor ingrese una frecuencia a registrar"); 
        }else{
            //Logica registro 
+    	   try {
+			agent.updateFrecuency(Integer.valueOf(frecuencia));
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	   
        }       
     }//GEN-LAST:event_btnRegrFrecuenciaActionPerformed
 
@@ -215,11 +257,10 @@ public class Invernadero extends javax.swing.JFrame implements Observer  {
         // TODO add your handling code here:
         String seleccionado =(String)comboInvernadero.getSelectedItem();
         if (seleccionado.equals("seleccione")){
-            limpiarTabla(tblResultadosTemperatura);
+            //limpiarTabla(tblResultadosTemperatura);
             return;
         }
         if (seleccionado.equals("all")){
-            limpiarTabla(tblResultadosTemperatura);
             DefaultTableModel modelo = (DefaultTableModel) tblResultadosTemperatura.getModel();
             for(String item: hTable.keySet()){
                      comboInvernadero.addItem(item);
@@ -233,7 +274,7 @@ public class Invernadero extends javax.swing.JFrame implements Observer  {
             
         }else{
             Entry item=hTable.get(seleccionado);
-            limpiarTabla(tblResultadosTemperatura);
+            //limpiarTabla(tblResultadosTemperatura);
             
             DefaultTableModel modelo = (DefaultTableModel) tblResultadosTemperatura.getModel();
             for (int i = 1; i < 6; i++) {
@@ -249,6 +290,10 @@ public class Invernadero extends javax.swing.JFrame implements Observer  {
     private void jBtnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnCerrarActionPerformed
        System.exit(0);
     }//GEN-LAST:event_jBtnCerrarActionPerformed
+
+    private void jBtnLimpiarGrillaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnLimpiarGrillaActionPerformed
+        limpiarTabla(tblResultadosTemperatura);
+    }//GEN-LAST:event_jBtnLimpiarGrillaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -294,23 +339,26 @@ public class Invernadero extends javax.swing.JFrame implements Observer  {
     private javax.swing.JComboBox comboInvernadero;
     private javax.swing.JLabel etiquetahost;
     private javax.swing.JButton jBtnCerrar;
+    private javax.swing.JButton jBtnLimpiarGrilla;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelTitulo;
+    private javax.swing.JLabel jLblFrecuencia;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel panelPrincipal;
     private javax.swing.JTable tblResultadosTemperatura;
     private javax.swing.JTextField txtFrecuencia;
     // End of variables declaration//GEN-END:variables
-    
-    
 	@Override
-	public void update(Observable arg0, Object arg1) {
-		if ("FREQ".equals(arg1)) {
+	public void update(Observable o, Object arg) {
+		if ("REGISTER".equals(arg)) {
 			agent.measureTemperature();	
-			txtFrecuencia.setText(String.valueOf(agent.getFrecuency()));
-			
-			//hTable =RegistrySingleton.getInstance().getAll();
+			jLblFrecuencia.setText(String.valueOf(agent.getFrecuency()));
+			llenarComboDatos();
+		}else if ("REFRESHNODES".equals(arg)){
+			llenarComboDatos();
+		}else if("CHANGEFRECUENCY".equals(arg)){
+			jLblFrecuencia.setText(String.valueOf(agent.getFrecuency()));
 		}
-		
 		
 	}
 }
