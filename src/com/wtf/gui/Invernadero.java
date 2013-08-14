@@ -288,7 +288,14 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
     }//GEN-LAST:event_comboInvernaderoActionPerformed
 
     private void jBtnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnCerrarActionPerformed
-       System.exit(0);
+       try {
+		agent.unregister();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    System.exit(0);
+       
     }//GEN-LAST:event_jBtnCerrarActionPerformed
 
     private void jBtnLimpiarGrillaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnLimpiarGrillaActionPerformed
