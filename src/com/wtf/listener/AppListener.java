@@ -2,6 +2,7 @@ package com.wtf.listener;
 
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Observable;
 
 import com.wtf.commons.Configuration;
 import com.wtf.commons.Entry;
@@ -16,7 +17,7 @@ import com.wtf.comunications.messages.RespDispatcherRegisterMessage;
 import com.wtf.comunications.messages.RespDispatcherUnRegisterMessage;
 import com.wtf.services.Agent;
 
-public class AppListener implements Runnable  {
+public class AppListener  implements Runnable  {
 
 	private Receiver receiver;
 	private Agent agent; 
@@ -47,6 +48,8 @@ public class AppListener implements Runnable  {
 			RespDispatcherRegisterMessage response = ((RespDispatcherRegisterMessage) message);			
 			agent.setFrecuency(response.getFrecuency());
 			RegistrySingleton.getInstance().putAll(( Hashtable<String,Entry>)message.getData());
+			 // trigger notification
+	         //notifyObservers(agent.getFrecuency());
 		} else if (message instanceof RespDispatcherUnRegisterMessage) {		
 			System.out.println("Recibiendo mensaje RespDispatcherUnRegisterMessage");
 			RegistrySingleton.getInstance().putAll(( Hashtable<String,Entry>)message.getData());

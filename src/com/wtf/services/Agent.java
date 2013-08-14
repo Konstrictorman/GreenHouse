@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,7 +30,7 @@ import com.wtf.comunications.messages.ReqDispatcherUpFrecuencyMessage;
 import com.wtf.comunications.messages.RespDispatcherAskTempMessage;
 import com.wtf.listener.AppListener;
 
-public class Agent {
+public class Agent extends Observable {
 	
     static {
         System.setProperty("log.name", System.getProperty("user.dir") + "/logs/log.log");
@@ -230,6 +231,10 @@ public class Agent {
 	public void setFrecuency(int frecuency) {
 		System.out.println("Frecuencia actualiza.... "+ frecuency);
 		this.frecuency = frecuency;
+		// mark as value changed
+        setChanged();
+        // trigger notification
+        notifyObservers("FREQ");
 	}
 
 	public String getName() {
