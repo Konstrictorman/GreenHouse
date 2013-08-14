@@ -3,11 +3,12 @@ package com.wtf.services;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,7 +30,7 @@ import com.wtf.comunications.messages.ReqDispatcherUpFrecuencyMessage;
 import com.wtf.comunications.messages.RespDispatcherAskTempMessage;
 import com.wtf.listener.AppListener;
 
-public class Agent {
+public class Agent extends Observable {
 	
     static {
         System.setProperty("log.name", System.getProperty("user.dir") + "/logs/log.log");
@@ -45,6 +46,7 @@ public class Agent {
 	private String port;
 	private Forwarder forwarder;	
 	private Map<Calendar, Float> tempRegistry;
+	private Hashtable<String, Map<Calendar, Float>> tempAll;
 	private TimerTask timerTask;
 	private Timer timer;
 	
@@ -55,6 +57,8 @@ public class Agent {
 		forwarder = ForwarderFactory.get(Integer.parseInt(Configuration.PORT), Configuration.PROTOCOL);		
 		ExecutorService service = Executors.newFixedThreadPool(10);
 		service.submit(new AppListener(this));
+		tempAll = new  Hashtable<String, Map<Calendar, Float>>();
+		
 		tempRegistry = new LinkedHashMap<Calendar, Float>() {
 			private static final long serialVersionUID = -5906100478003476286L;
 			private static final int STACK_SIZE=5;
@@ -71,6 +75,9 @@ public class Agent {
 		Entry entry = new Entry(Configuration.IP_DISPATCHER , 
 				Integer.valueOf(Configuration.PORT_DISPATCHER), Configuration.PROTOCOL);
 		RegistrySingleton.getInstance().put(Configuration.DISPATCHER, entry);
+		log.info("name: " + Configuration.lOCALHOST);
+		log.info("Ip: " + Configuration.IP);
+		log.info("port: " + Configuration.PORT);
 	}
 	
 	private float calculateTemperature() {
@@ -134,12 +141,17 @@ public class Agent {
 		}
 	}
 	
-	@SuppressWarnings("rawtypes")
 	public void replyTemperature() throws IOException{
-		//TODO: como se v a ha enviar la temperatura
-		RespDispatcherAskTempMessage msg = new RespDispatcherAskTempMessage(Configuration.lOCALHOST, new ArrayList());
+		RespDispatcherAskTempMessage msg = new RespDispatcherAskTempMessage(Configuration.lOCALHOST,tempRegistry);
 		forwarder.sendMessage(name , msg);		
 	}
+	
+	public void externalTemperature(Message message){
+		@SuppressWarnings("unchecked")
+		Map<Calendar, Float> temp =  (Map<Calendar, Float>)((RespDispatcherAskTempMessage)message).getData();
+		tempAll.put(message.getSender(), temp);
+	}
+	
 	
 	public void askTemperature(String name) throws IOException {
 		/*
@@ -230,6 +242,10 @@ public class Agent {
 	public void setFrecuency(int frecuency) {
 		System.out.println("Frecuencia actualiza.... "+ frecuency);
 		this.frecuency = frecuency;
+		// mark as value changed
+        setChanged();
+        // trigger notification
+        notifyObservers("FREQ");
 	}
 
 	public String getName() {

@@ -1,7 +1,6 @@
 package com.wtf.gui;
 
 import java.io.IOException;
-import java.util.ResourceBundle;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
@@ -16,9 +15,6 @@ public class GreenHouse {
 	
 	private static Logger log = Logger.getLogger(GreenHouse.class.getName());
 	
-	private String name;
-	private String address;
-	private String port;
 	private Agent agent;
 	
 	public GreenHouse() throws IOException {
@@ -26,16 +22,13 @@ public class GreenHouse {
 		agent.register();
 		
 		//TODO: La frecuencia la da el dispatcher...
-		agent.setFrecuency(10);
+		//agent.setFrecuency(10);
 		agent.measureTemperature();			
 	}
 	
 	
 	public static void main(String[] args) throws IOException {
 		GreenHouse gh = new GreenHouse();
-		log.info("name: " + gh.getName());
-		log.info("Ip: " + gh.getAddress());
-		log.info("port: " + gh.getPort());
 		
 		String input = "";
 		Scanner scanner = new Scanner(System.in);
@@ -80,7 +73,7 @@ public class GreenHouse {
 			log.info("Type your command :");	
 			input = scanner.nextLine();
 		} while (!input.equals("exit"));
-		log.warn("Shutting down greenhouse "+ gh.name);
+		log.warn("Shutting down greenhouse ");
 		log.warn("Bye !");
 		scanner.close();
 		gh.agent.shutDown();
@@ -92,42 +85,6 @@ public class GreenHouse {
 	
 	public void askAllTemperature() throws IOException {
 		agent.askAllTemperature();
-	}
-
-
-
-	public String getName() {
-		return name;
-	}
-
-
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
-
-	public String getAddress() {
-		return address;
-	}
-
-
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-
-
-	public String getPort() {
-		return port;
-	}
-
-
-
-	public void setPort(String port) {
-		this.port = port;
 	}
 
 	
