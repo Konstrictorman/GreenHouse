@@ -43,14 +43,18 @@ public class AppListener implements Runnable  {
 	@SuppressWarnings("unchecked")
 	private void manejarMessage(Message message) throws IOException {
 		if (message instanceof RespDispatcherRegisterMessage) {
+			System.out.println("Recibiendo mensaje RespDispatcherRegisterMessage");
 			RespDispatcherRegisterMessage response = ((RespDispatcherRegisterMessage) message);			
 			agent.setFrecuency(response.getFrecuency());
 			RegistrySingleton.getInstance().putAll(( Hashtable<String,Entry>)message.getData());
-		} else if (message instanceof RespDispatcherUnRegisterMessage) {			
+		} else if (message instanceof RespDispatcherUnRegisterMessage) {		
+			System.out.println("Recibiendo mensaje RespDispatcherUnRegisterMessage");
 			RegistrySingleton.getInstance().putAll(( Hashtable<String,Entry>)message.getData());
 		}else if (message instanceof ReqDispatcherUpFrecuencyMessage) {
+			System.out.println("Recibiendo mensaje ReqDispatcherUpFrecuencyMessage");
 			agent.setFrecuency(Integer.valueOf(message.getData().toString()));
 		} else if (message instanceof ReqDispatcherAskTempMessage) {
+			System.out.println("Recibiendo mensaje ReqDispatcherAskTempMessage");
 			agent.replyTemperature(); 
 		} else if (message instanceof RespDispatcherAskTempMessage) {
 			//TODO: como se le pasa la informacion al agente 

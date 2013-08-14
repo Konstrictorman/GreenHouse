@@ -228,6 +228,7 @@ public class Agent {
 	}
 
 	public void setFrecuency(int frecuency) {
+		System.out.println("Frecuencia actualiza.... "+ frecuency);
 		this.frecuency = frecuency;
 	}
 
