@@ -64,7 +64,11 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
        hTable =RegistrySingleton.getInstance().getAll();
        //Seteamos el titulo del invernadero
        jLabelTitulo.setText(jLabelTitulo.getText()+ " "+Configuration.lOCALHOST);
+       comboInvernadero.removeAllItems();
+       
+       comboInvernadero.addItem("seleccione");
        comboInvernadero.addItem("all");
+       
        for(String item: hTable.keySet()){
     	   if(item.equals(Configuration.DISPATCHER)) continue;
            comboInvernadero.addItem(item);
@@ -256,14 +260,14 @@ public class Invernadero extends javax.swing.JFrame implements Observer {
     private void comboInvernaderoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboInvernaderoActionPerformed
         // TODO add your handling code here:
         String seleccionado =(String)comboInvernadero.getSelectedItem();
-        if (seleccionado.equals("seleccione")){
+        if (seleccionado==null || seleccionado.equals("seleccione")){
             //limpiarTabla(tblResultadosTemperatura);
             return;
         }
         if (seleccionado.equals("all")){
             DefaultTableModel modelo = (DefaultTableModel) tblResultadosTemperatura.getModel();
             for(String item: hTable.keySet()){
-                     comboInvernadero.addItem(item);
+                     //comboInvernadero.addItem(item);
                      String[] datos = {item, String.valueOf(2), 2+"F"}; // Cantidad de columnas de la tabla
                      modelo.addRow(datos);
                      for (int i = 2; i < 6; i++) {
