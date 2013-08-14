@@ -136,9 +136,9 @@ public class Agent extends Observable {
 		}
 	}
 	
-	public void replyTemperature() throws IOException{
+	public void replyTemperature(Message message) throws IOException{
 		RespDispatcherAskTempMessage msg = new RespDispatcherAskTempMessage(Configuration.lOCALHOST,tempRegistry);
-		forwarder.sendMessage(name , msg);		
+		forwarder.sendMessage(message.getSender() , msg);		
 	}
 	
 	public void externalTemperature(Message message){

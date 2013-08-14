@@ -54,7 +54,7 @@ public class AppListener  implements Runnable  {
 			agent.setFrecuency(Integer.valueOf(message.getData().toString()));
 		} else if (message instanceof ReqDispatcherAskTempMessage) {
 			System.out.println("Recibiendo mensaje ReqDispatcherAskTempMessage from "+ message.getSender());
-			agent.replyTemperature(); 
+			agent.replyTemperature(message); 
 		} else if (message instanceof RespDispatcherAskTempMessage) {
 			agent.externalTemperature(message);
 		}
